@@ -4,7 +4,7 @@ import Footer from '../components/footer';
 import { useContract, useContractWrite } from '@thirdweb-dev/react';
 
 export default function Example() {
-    const { contract } = useContract('0xcd3EAf02914169fE4D6cBf19Ce6494e2c0160E40');
+    const { contract } = useContract('0x30c2d6966A5FB06534c3Ad4F65Dc14b596516C65');
     const { mutateAsync: inputRegistrationId, isLoading } = useContractWrite(
         contract,
         'inputRegistrationId'
