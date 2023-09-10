@@ -120,6 +120,11 @@ contract Admin {
         return string(abi.encodePacked("Welcome to your dashboard, ", member.name, "!"));
     }
 
+    // Function to get the admin dashboard
+    function getAdminDashboard() external view onlyAdmin returns (string memory) {
+        return "Welcome to the Admin Dashboard!";
+    }
+
     // Internal function to generate a random registration ID for a member
     function _generateRandomId() private view returns (string memory) {
         uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp, block.basefee, msg.sender))) % 10000;

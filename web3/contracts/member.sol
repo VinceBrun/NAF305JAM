@@ -24,6 +24,9 @@ contract MemberContract {
     string public registrationId;
     string public membershipId;
 
+    // Mapping to keep track of registered wallet addresses
+    mapping(address => bool) public isRegistered;
+
     // Constructor to set the member address and link to the admin contract
     constructor(address _adminContractAddress) {
         memberAddress = msg.sender;
@@ -53,6 +56,7 @@ contract MemberContract {
         string memory _validIdNumber
     ) external {
         require(isAdminRegistered, "Please input a valid registration ID provided by the admin.");
+        require(!isRegistered[msg.sender], "You have already registered.");
 
         memberProfile = MemberProfile(
             _name,
@@ -68,6 +72,10 @@ contract MemberContract {
 
         // Generate the membership ID and store it in the contract
         membershipId = generateUniqueMembershipId();
+        emit MembershipIdGenerated(memberAddress, membershipId);
+
+        // Mark the wallet address as registered
+        isRegistered[msg.sender] = true;
     }
 
     // Function to update member profile information
