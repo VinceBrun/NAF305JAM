@@ -1,6 +1,8 @@
 import Head from "next/head";
 import Hero from "../components/hero";
 import Navbar from "../components/navbar";
+
+
 import SectionTitle from "../components/sectionTitle";
 
 import { benefitOne, benefitTwo } from "../components/data";
@@ -61,6 +63,7 @@ const Home = () => {
         and more. Explore our comprehensive FAQ to enhance your understanding of the mess and make the
         most of your experience within our close-knit community.
       </SectionTitle>
+      
       <Faq />
       <Cta />
       <Footer />
