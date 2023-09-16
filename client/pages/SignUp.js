@@ -266,7 +266,7 @@ export default function Example() {
                         <p className="mt-2 text-center">
                             Registration successful!{' '}
                             <a
-                                href="/dashboard" // Replace with the actual dashboard link
+                                href="/memberDashboard" // Replace with the actual dashboard link
                                 className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300"
                             >
                                 Proceed to Dashboard
@@ -283,7 +283,7 @@ export default function Example() {
                         <p className="mt-10 text-center text-sm text-gray-400">
                             Already a member?{' '}
                             <a
-                                href="/dashboard" // Replace with the actual dashboard link
+                                href="/memberDashboard" // Replace with the actual dashboard link
                                 className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300"
                             >
                                 Sign In
