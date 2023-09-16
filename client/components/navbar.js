@@ -21,7 +21,7 @@ const Navbar = () => {
     if (address) {
       if (isAdmin) {
         console.log("Admin connected successfully");
-        router.push('/dashboard');
+        router.push('/admindashboard');
       } else if (!isLoading && isRegistered) {
         console.log("Registered member connected.");
         router.push('/memberDashboard');
