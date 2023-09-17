@@ -17,7 +17,7 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
-  { name: 'Members Reg. ID', href: '/Team', icon: UsersIcon, current: false },
+  { name: 'Members Reg. ID', href: '/generate_id', icon: UsersIcon, current: false },
   { name: 'Get Financial Status', href: '#', icon: FolderIcon, current: false },
   { name: 'Revoke Membership', href: '#', icon: CalendarIcon, current: false },
   { name: 'Update Financial Status', href: '#', icon: DocumentDuplicateIcon, current: false },

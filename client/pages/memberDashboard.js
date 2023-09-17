@@ -1,31 +1,61 @@
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Fragment, useState, useEffect } from 'react';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ConnectWallet } from "@thirdweb-dev/react";
+import Link from "next/link";
+import { useRouter } from 'next/router';
 
 const user = {
     name: 'Tom Cook',
     email: 'tom@example.com',
-    imageUrl:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-const navigation = [
-    { name: 'Dashboard', href: '#', current: true },
-    { name: 'Team', href: '#', current: false },
+    imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+};
+
+const initialNavigation = [
+    { name: 'Member', href: '#', current: true },
+    { name: 'Team', href: '/team', current: false },
+    // Update href values for the remaining links
     { name: 'Projects', href: '#', current: false },
     { name: 'Calendar', href: '#', current: false },
     { name: 'Reports', href: '#', current: false },
-]
+];
+
 const userNavigation = [
     { name: 'Your Profile', href: '#' },
     { name: 'Settings', href: '#' },
     { name: 'Sign out', href: '#' },
-]
+];
 
 function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(' ');
 }
 
 export default function Example() {
+    const [navigation, setNavigation] = useState(initialNavigation);
+    const router = useRouter();
+
+    useEffect(() => {
+        updateCurrentPage(router.pathname);
+
+        const handleRouteChange = (url) => {
+            updateCurrentPage(url);
+        }
+
+        router.events.on('routeChangeComplete', handleRouteChange);
+
+        return () => {
+            router.events.off('routeChangeComplete', handleRouteChange);
+        }
+    }, []);
+
+    const updateCurrentPage = (path) => {
+        const updatedNavigation = navigation.map((item) => ({
+            ...item,
+            current: item.href === path,
+        }));
+        setNavigation(updatedNavigation);
+    };
+
     return (
         <>
             <div className="min-h-full">
@@ -47,25 +77,27 @@ export default function Example() {
                                                 <div className="hidden md:block">
                                                     <div className="ml-10 flex items-baseline space-x-4">
                                                         {navigation.map((item) => (
-                                                            <a
+                                                            <Disclosure.Button
                                                                 key={item.name}
+                                                                as="a"
                                                                 href={item.href}
                                                                 className={classNames(
-                                                                    item.current
-                                                                        ? 'bg-gray-900 text-white'
-                                                                        : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                                    'rounded-md px-3 py-2 text-sm font-medium'
+                                                                    item.current ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                                    'block rounded-md px-3 py-2 text-base font-medium'
                                                                 )}
                                                                 aria-current={item.current ? 'page' : undefined}
                                                             >
                                                                 {item.name}
-                                                            </a>
+                                                            </Disclosure.Button>
                                                         ))}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="hidden md:block">
                                                 <div className="ml-4 flex items-center md:ml-6">
+                                                    <div className="absolute inset-y-0 right-0 mr-3 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                                                        <ConnectWallet showBalance={{ smallScreen: true, largeScreen: false }} />
+                                                    </div>
                                                     <button
                                                         type="button"
                                                         className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -75,7 +107,6 @@ export default function Example() {
                                                         <BellIcon className="h-6 w-6" aria-hidden="true" />
                                                     </button>
 
-                                                    {/* Profile dropdown */}
                                                     <Menu as="div" className="relative ml-3">
                                                         <div>
                                                             <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -93,31 +124,26 @@ export default function Example() {
                                                             leaveFrom="transform opacity-100 scale-100"
                                                             leaveTo="transform opacity-0 scale-95"
                                                         >
-                                                            <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                                {userNavigation.map((item) => (
-                                                                    <Menu.Item key={item.name}>
-                                                                        {({ active }) => (
-                                                                            <a
-                                                                                href={item.href}
-                                                                                className={classNames(
-                                                                                    active ? 'bg-gray-100' : '',
-                                                                                    'block px-4 py-2 text-sm text-gray-700'
-                                                                                )}
-                                                                            >
-                                                                                {item.name}
-                                                                            </a>
-                                                                        )}
-                                                                    </Menu.Item>
-                                                                ))}
+                                                            <Menu.Items className="absolute right-0 w-48 mt-2 origin-top-right bg-gray-700 divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                                <div className="py-1">
+                                                                    {userNavigation.map((item) => (
+                                                                        <Disclosure.Button
+                                                                            key={item.name}
+                                                                            as="a"
+                                                                            href={item.href}
+                                                                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                                                                        >
+                                                                            {item.name}
+                                                                        </Disclosure.Button>
+                                                                    ))}
+                                                                </div>
                                                             </Menu.Items>
                                                         </Transition>
                                                     </Menu>
                                                 </div>
                                             </div>
-                                            <div className="-mr-2 flex md:hidden">
-                                                {/* Mobile menu button */}
-                                                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                                    <span className="absolute -inset-0.5" />
+                                            <div className="flex md:hidden">
+                                                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-white">
                                                     <span className="sr-only">Open main menu</span>
                                                     {open ? (
                                                         <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -129,70 +155,16 @@ export default function Example() {
                                         </div>
                                     </div>
                                 </div>
-
-                                <Disclosure.Panel className="border-b border-gray-700 md:hidden">
-                                    <div className="space-y-1 px-2 py-3 sm:px-3">
-                                        {navigation.map((item) => (
-                                            <Disclosure.Button
-                                                key={item.name}
-                                                as="a"
-                                                href={item.href}
-                                                className={classNames(
-                                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                    'block rounded-md px-3 py-2 text-base font-medium'
-                                                )}
-                                                aria-current={item.current ? 'page' : undefined}
-                                            >
-                                                {item.name}
-                                            </Disclosure.Button>
-                                        ))}
-                                    </div>
-                                    <div className="border-t border-gray-700 pb-3 pt-4">
-                                        <div className="flex items-center px-5">
-                                            <div className="flex-shrink-0">
-                                                <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
-                                            </div>
-                                            <div className="ml-3">
-                                                <div className="text-base font-medium leading-none text-white">{user.name}</div>
-                                                <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                            >
-                                                <span className="absolute -inset-1.5" />
-                                                <span className="sr-only">View notifications</span>
-                                                <BellIcon className="h-6 w-6" aria-hidden="true" />
-                                            </button>
-                                        </div>
-                                        <div className="mt-3 space-y-1 px-2">
-                                            {userNavigation.map((item) => (
-                                                <Disclosure.Button
-                                                    key={item.name}
-                                                    as="a"
-                                                    href={item.href}
-                                                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                                                >
-                                                    {item.name}
-                                                </Disclosure.Button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </Disclosure.Panel>
                             </>
                         )}
                     </Disclosure>
                     <header className="py-10">
                         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                            <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
+                            <h1 className="text-3xl font-bold tracking-tight text-white">Welcome to your Dashboard</h1>
                         </div>
                     </header>
                 </div>
-
-                <main className="-mt-32">
-                    <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">{/* Your content */}</div>
-                </main>
             </div>
         </>
-    )
+    );
 }

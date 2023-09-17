@@ -1,21 +1,36 @@
-'use client'
 import { useState } from 'react';
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
 
 export default function Generate_id() {
   const [name, setName] = useState('');
   const [imageurl, setImageUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [registrationId, setRegistrationId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const { contract } = useContract("0xA8D27E5a646e20365B8F15033220f861d5DAEAD4");
+  const { mutateAsync: generateRegistrationId, isLoading } = useContractWrite(contract, "generateRegistrationId");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setErrorMessage('');
+    setSuccessMessage('');
 
     if (name.trim() === '' || imageurl.trim() === '') {
       setErrorMessage('Both fields are required.');
       return;
     }
 
-    // Handle form submission logic here
-    // If both fields are filled, proceed with submission
+    try {
+      const data = await generateRegistrationId({ args: [name, imageurl] });
+      console.info("contract call success", data);
+      setRegistrationId(data);
+      setSuccessMessage('Successful! ID has been generated.');
+    } catch (err) {
+      console.error("contract call failure", err);
+      setErrorMessage('Failed to generate registration ID from the smart contract.');
+    }
   };
 
   return (
@@ -44,7 +59,7 @@ export default function Generate_id() {
                   required
                   className="block w-full rounded-md px-2 border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset
                             ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                            placeholder='Name'
+                  placeholder='Name'
                 />
               </div>
             </div>
@@ -63,7 +78,8 @@ export default function Generate_id() {
                   onChange={(e) => setImageUrl(e.target.value)}
                   required
                   className="px-2 block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset
-                            ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6" placeholder='Image URL'
+                            ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                  placeholder='Image URL'
                 />
               </div>
             </div>
@@ -72,15 +88,20 @@ export default function Generate_id() {
               <div className="text-red-500 mt-2">{errorMessage}</div>
             )}
 
+            {successMessage && (
+              <div className="text-green-500 mt-2">{successMessage}</div>
+            )}
+
             <div>
               <button
                 type="submit"
+                disabled={isLoading}
                 className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm 
                             font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 
                             focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
                             focus-visible:outline-indigo-500"
               >
-                Submit
+                {isLoading ? 'Loading...' : 'Submit'}
               </button>
             </div>
           </form>
